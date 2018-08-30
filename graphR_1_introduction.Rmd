@@ -1,0 +1,241 @@
+---
+title: "graphR 1: Introduction"
+author: "Lise Vaudor"
+date: "21 mars 2017"
+output: 
+  slidy_presentation:
+    css: styles.css 
+---
+
+
+
+
+# Introduction
+
+<div id="left">
+
+**ggplot2** = un package hyper fashion. 
+
+ggplot2 est utilisé pour réaliser des graphiques selon une philosophie qui lui est propre (en l'occurrence, inspirée du livre "The **G**rammar of **G**raphics" de Leland Wilkinson, d'où son nom ggplot), et qui le distingue des autres outils de production graphique sous R, notamment les fonctions graphiques "de base" comme "hist", "boxplot", etc.
+
+</div>
+
+<div id="right">
+L'idée générale est de **décrire** et donc **produire** un **graphique** comme un **assemblage de couches**
+
+=> production **simple** et **intuitive** de graphiques **beaux** et **riches**
+
+
+Commençons par charger le package `ggplot2` -après l'avoir, si nécessaire, installé- :
+
+```{r, message=FALSE, warning=FALSE}
+require(ggplot2)
+```
+
+</div>
+
+
+```{r,include=FALSE}
+require(grid)
+require(gridExtra)
+```
+
+# Jeu de données illustratif
+
+<div id="left">
+Pour vous illustrer les principes et résultats graphiques du package `ggplot2`, je vais utiliser le jeu de données `catdata`, qui comprend les variables:
+
+```{r}
+catdata <- read.csv("../../datasets/catdata.csv", sep=";")
+head(catdata)
+```
+
+</div>
+<div id="right">
+- **haircolor**: la couleur du poil (catégoriel)
+- **hairpattern**: le "pattern" coloré du poil (catégoriel)
+- **sex**: le sexe du chat (catégoriel)
+- **weight**: son poids (quantitatif)
+- **age**: son âge (quantitatif)
+- **foodtype**: le type d'alimentation (catégoriel)
+
+</div>
+
+
+
+# Les bases: jeu de données, aethetics, et geoms
+
+<div id="left">
+On **crée** un graphique à l'aide de la fonction **ggplot**. On 
+spécifie sur quel **jeu de données** le graphique va être construit, ainsi que les **aesthetics** x et y:
+
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata,aes(x=haircolor,y=weight))
+plot(p)
+```
+</div>
+
+<div id="left">
+
+Choisissons par exemple de représenter l'information à l'aide d'un **geom "point"**:
+
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata,aes(x=haircolor,y=weight)) +
+  geom_point()
+plot(p)
+```
+</div>
+
+
+# Modification du type de geom
+
+<div id="left">
+Si je souhaite réaliser un graphique de type **boxplot** plutôt que point alors il faut que je modifie le **type de geom** que j'utilise :  
+
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata,aes(x=haircolor,y=weight)) +
+  geom_boxplot()
+plot(p)
+```
+</div>
+
+<div id="right">
+
+## Remarque
+Vous devez choisir un **type de geom compatible avec la nature des informations** (en x et y) que vous voulez représenter!
+
+```{r, fig.width=6, fig.height=4, error=TRUE}
+p <- ggplot(catdata,aes(x=haircolor)) +
+  geom_point()
+plot(p)
+```
+</div>
+
+# Modification du type de geom
+
+<div id="left">
+## Graphique univarié, x discrète
+
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata,aes(x=haircolor)) +
+  geom_bar()
+plot(p)
+```
+</div>
+
+<div id="right">  
+
+## Graphique univarié, x continue
+```{r, fig.width=6, fig.height=4, message=FALSE, warning=FALSE}
+p <- ggplot(catdata,aes(x=weight)) +
+  geom_histogram()
+plot(p)
+```
+</div>
+
+
+
+# Modification du type de geom
+
+<div id="left">
+## Bivarié, x et y continues
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata,aes(x=age, y=weight)) +
+  geom_point()
+plot(p)
+```
+</div>
+
+<div id="right">
+## Bivarié, x et y continues
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata,aes(x=age, y=weight)) +
+  geom_bin2d()
+plot(p)
+```
+</div>
+
+
+# Modification du type de geom
+
+<div id="left">
+## Bivarié, x discrète et y continue
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata,aes(x=haircolor, y=weight)) +
+  geom_boxplot()
+plot(p)
+```
+</div>
+
+<div id="right">
+## Bivarié, x discrète et y continue
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata,aes(x=haircolor, y=weight)) +
+  geom_violin()
+plot(p)
+```
+</div>
+
+
+# Superposition de geoms
+
+<div id="left">
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata, aes(x=haircolor, y=age))+
+  geom_point(col="blue", size=2) +
+  geom_jitter(col="pink", size=2)
+plot(p)
+```
+
+</div>
+
+
+
+# Paramétrisation du geom
+
+<div id="left">
+
+Evidemment tous **les geoms peuvent être paramétrés**. Je peux par exemple modifier la couleur de mes boîtes à moustache de la façon suivante:
+
+
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata,aes(x=haircolor,y=weight)) +
+  geom_boxplot(fill="lightskyblue")
+plot(p)
+```
+</div>
+
+<div id="right">
+Parmi les arguments les plus utilisés pour paramétrer les geoms, on peut citer: 
+
+- **color**: la couleur des lignes
+- **fill**: la couleur de remplissage
+- **linetype**: le type de ligne
+- **size**: la taille des symboles ou l'épaisseur des lignes
+- **alpha**: la transparence
+</div>
+
+# Paramétrisation du geom
+
+<div id="left">
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata, aes(x=age, y= weight)) +
+  geom_point(shape=24,
+             color="blue",
+             fill="lightskyblue",
+             alpha=0.6,
+             size=3)
+plot(p)
+```
+</div>
+<div id="right">
+```{r, fig.width=6, fig.height=4}
+p <- ggplot(catdata, aes(x=age)) +
+  geom_density(color="red",
+               fill="pink",
+               linetype=3,
+               lwd=2)
+plot(p)
+
+```
+</div>
